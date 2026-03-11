@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -52,7 +53,7 @@ jobs:
           --query taskDefinition \
           > task-definition.json
 
-      - name: Update container image
+      - name: Update container image in task definition
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -60,7 +61,7 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
-      - name: Deploy to ECS
+      - name: Deploy new task definition to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-task.outputs.task-definition }}
